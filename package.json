@@ -13,7 +13,7 @@
   "scripts": {
     "start": "yarn build && node ./bin/app.js",
     "start-dev": "node ./src/app.js",
-    "start-build": "yarn link && p-regen",
+    "start-build": "yarn build && yarn link && p-regen",
     "test": "mocha ./test/**/*.js",
     "cover": "nyc npm run test",
     "lint": "eslint",
@@ -28,7 +28,9 @@
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv-safe": "^8.2.0",
+    "got": "^13.0.0",
     "json-chalkify": "^1.0.2",
+    "lodash": "^4.17.21",
     "node-fetch": "^3.3.2",
     "winston": "^3.10.0"
   },

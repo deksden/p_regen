@@ -1,0 +1,68 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import {
+List, Create, Edit, Filter, SimpleForm, required, TextInput, Datagrid, TextField, ReferenceField, SelectField, DateField, EditButton, DateInput, ReferenceInput, NumberInput, SelectInput
+} from 'react-admin'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles({
+  wide: {
+    width: '45%',
+    minWidth: '251px'
+  }
+})
+
+const {{name}}Filter = (props) => (
+  <Filter {...props}>
+/** Fragment: filter-fields, model: {{name}} */
+1
+2
+3
+/** FragmentEnd */
+  </Filter>
+)
+
+/** Fragment: app-model-{{nameKebab}}-enum-defs */
+/** FragmentEnd */
+
+export const {{name}}List = props => (
+  <List {...props} title="{{caption}}" filters={<{{name}}Filter />}>
+    <Datagrid rowClick='edit'>
+/** Fragment: app-model-{{nameKebab}}-list-fields */
+/** FragmentEnd */
+    </Datagrid>
+  </List>
+)
+
+const {{name}}Form = (props) => {
+  const classes = useStyles()
+
+  return (
+    <SimpleForm {... props}>
+/** Fragment: app-model-{{nameKebab}}-form-fields */
+/** FragmentEnd */
+    </SimpleForm>
+  )
+}
+
+export const {{name}}Create = (props) => (
+  <Create {...props}>
+    <{{name}}Form />
+  </Create>
+)
+
+const {{name}}EditTitle = ({ record }) => {
+  return <span>{{caption}}{record ? `"${record.caption}"` : ''}</span>
+}
+
+{{name}}EditTitle.propTypes = {
+  record: PropTypes.shape({
+    caption: PropTypes.string
+  })
+}
+
+export const {{name}}Edit = props => (
+  <Edit title={<{{name}}EditTitle />} {...props}>
+    <{{name}}Form />
+  </Edit>
+)

@@ -1,2 +1,21 @@
 {
+  "server": {
+    "url": "http://localhost:3005",
+    "auth": "JWT",
+    "authPath": "/auth/login",
+    "email": "admin@email.net",
+    "password": "admin12345"
+  },
+  "basePath": "/Users/deksden/Documents/GitHub/p_app",
+  "cachePath": "/Users/deksden/Documents/GitHub/p_app/data",
+  "models": {
+    "mrpPlan": {
+    }
+  },
+  "files": [
+    {
+      "name": "file1",
+      "fragments": []
+    }
+  ]
 }
