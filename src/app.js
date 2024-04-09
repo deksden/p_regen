@@ -5,7 +5,8 @@ import { REGEN_ARGS, REGEN_CONFIG, REGEN_HELP, REGEN_VERSION, REGEN_NEW_MODEL } 
 import { showHelp } from './help'
 import { returnVersion } from './version'
 import { doAuth } from './server'
-import { newModel, SourceFile } from './regen'
+import { SourceFile } from './regen'
+import { newModel } from './new_model'
 import logger from './logger'
 
 const main = async () => {

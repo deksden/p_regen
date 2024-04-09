@@ -6,14 +6,22 @@ export const doAuth = async (config) => {
       const url = `${config.server.url}${config.server.authPath}`
       const opt = { json: { email: config.server.email, password: config.server.password } }
       logger.info(`Auth on server on "${url}"`)
-      const data = await got.post(url, opt).json()
-      if (!data.token) {
-        const err = 'Hmmm... No token from server!'
-        console.error(err)
-        throw new Error(err)
+
+      try {
+        const data = await got.post(url, opt).json()
+        if (!data.token) {
+          const err = 'Hmmm... No token from server!'
+          console.error(err)
+          throw new Error(err)
+        }
+        config.token = data.token
+        return data.token
+      } catch (e) {
+        const err = `Failed to auth on server! ${e}`
+        logger.error(err)
+        throw e
+
       }
-      config.token = data.token
-      return data.token
     }
   }
 
