@@ -4,7 +4,8 @@ import { doAuth, fetchServer } from '../server'
 import _ from 'lodash'
 import logger from '../logger'
 import { writeFileSync } from 'fs'
-import { SourceFile } from '../regen'
+import { postprocessAddComma, postprocessSplitByComma, postprocessSplitByNewline, SourceFile } from '../regen'
+
 
 export const newModel = async (args, modelName) => {
   /*
@@ -22,25 +23,34 @@ export const newModel = async (args, modelName) => {
   // get initial code from server
   let res = await fetchServer(config, `/codegen/model/${modelName}`,'GET', null)
 
-  // write new file
+  // write new file from template
   const fileName = `${config.basePath}/src/resources/${_.kebabCase(modelName)}.js`
   logger.success(`Writing file "${fileName}"`)
   writeFileSync(fileName, res.body, `utf-8`)
 
+  // загрузим новый шаблонный файл для обработки всех его фрагментов:
   const aFile = new SourceFile(fileName)
-  logger.success('Fragments:')
-  logger.success(JSON.stringify(aFile.fragments))
-  /* expand all predefined fragments:
-    import-components
-    field-defs
-    filter-fields
-    list-fields
-    form-fields
-   */
 
   // import-components:
   res = await fetchServer(config, `/codegen/model/${modelName}/import-components`,'GET', null)
-  aFile.fragments['import-components'].currentValue = res.body
-  logger.info('import-components')
-  logger.success(res.body)
+  aFile.fragments['import-components'].currentValue = postprocessAddComma(postprocessSplitByComma(res.body))
+
+  // field-defs:
+  res = await fetchServer(config, `/codegen/model/${modelName}/field-defs`,'GET', null)
+  aFile.fragments['field-defs'].currentValue = postprocessSplitByNewline(res.body)
+
+  // list-fields:
+  res = await fetchServer(config, `/codegen/model/${modelName}/list`,'GET', null)
+  aFile.fragments['list-fields'].currentValue = postprocessSplitByNewline(res.body)
+
+  // form-fields:
+  res = await fetchServer(config, `/codegen/model/${modelName}/edit`,'GET', null)
+  aFile.fragments['form-fields'].currentValue = postprocessSplitByNewline(res.body)
+
+  // filter-fields:
+  res = await fetchServer(config, `/codegen/model/${modelName}/filter`,'GET', null)
+  aFile.fragments['filter-fields'].currentValue = postprocessSplitByNewline(res.body)
+
+  aFile.processWriteFile()
+  writeFileSync(fileName, aFile.file.join('\n'), `utf-8`)
 }

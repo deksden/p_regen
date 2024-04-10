@@ -1,9 +1,23 @@
 import { readFileSync, writeFileSync } from 'fs'
 import _ from 'lodash'
+import mustache from 'mustache'
 import { checkConfig, defaultConfig, loadConfig } from '../config'
 import { doAuth, fetchServer } from '../server'
 import { REGEN_CONFIG } from '../const'
 import logger from '../logger'
+
+export const postprocessSplitByNewline = (txt) => {
+  const res = txt.split(/\r?\n/)
+  return Array.isArray(res) ? res : [res]
+}
+
+export const postprocessSplitByComma = (txt) => {
+  return txt.split(',')
+}
+
+export const postprocessAddComma = (txt) => {
+  return txt.map(itm => itm + ',')
+}
 
 export const loadFileAsStrings = (fileName) => {
   try {
@@ -31,6 +45,10 @@ export const loadFileAsStrings = (fileName) => {
     - свойства: currentValue, originalValue
 */
 
+/** класс Исходный код
+ *
+ */
+
 export class SourceFile {
   fragments
   file
@@ -41,7 +59,13 @@ export class SourceFile {
    * @return {boolean} возвращает true если строка содержит токен начала фрагмента
    */
   isFragmentStart(element) {
-    return _.startsWith(_.trim(element), '/** Fragment:')
+    const rx = /\/\*\*\s*Fragment:.*/
+
+    if (element.match(rx)) {
+      return true
+    }
+    return false
+    // return _.startsWith(_.trim(element), '/** Fragment:')
   }
 
   /** является ли строка завершением фрагмента?
@@ -50,7 +74,13 @@ export class SourceFile {
    * @return {boolean} возвращает true если строка содержит токен завершения фрагмента
    */
   isFragmentEnd(element) {
-    return _.startsWith(_.trim(element), '/** FragmentEnd')
+    const rx = /\/\*\*\s*FragmentEnd.*/
+
+    if (element.match(rx)) {
+      return true
+    }
+    return false
+    // return _.startsWith(_.trim(element), '/** FragmentEnd')
   }
 
   /** из начальной строки фрагмента выделяем имя фрагмента
@@ -117,6 +147,9 @@ export class SourceFile {
     return str
   }
 
+  /** Обработать загрузку файла, извлечь текущие значения фрагментов из исходного файла, обнулить строки с фрагментами в файле.
+   *
+   */
   processLoadFile () {
     // process file
     let ndx = 0
@@ -160,10 +193,16 @@ export class SourceFile {
     for (let ndx=0; ndx<fCount; ndx++) {
       const f = this.byIndex(ndx) // получим текущий фрагмент
       const fSize = f.currentValue.length // размер в строках текущего значения этого фрагмента
-      f.currentValue = f.currentValue.map(itm => f.data.indent + itm)
-      this.file.splice(f.indexStart+1+offset, 0, ...f.currentValue)
+      if (fSize > 0) {
+        f.currentValue = f.currentValue.map(itm => f.data.indent + itm)
+        this.file.splice(f.indexStart+1+offset, 0, ...f.currentValue)
+      }
       offset += fSize
     }
+  }
+
+  expandTemplate (data) {
+    this.file.map(itm => mustache.render(itm,data))
   }
 
   /** конструктор - загрузить файл и обработать его
@@ -174,8 +213,8 @@ export class SourceFile {
   constructor (fileName) {
     this.file = loadFileAsStrings(fileName)
     this.processLoadFile()
-    console.log(JSON.stringify(this.fragments))
-    this.processWriteFile()
+    // console.log(JSON.stringify(this.fragments))
+    // this.processWriteFile()
   }
 
   /**
@@ -194,32 +233,4 @@ export class SourceFile {
     const keys = Object.keys(this.fragments)
     return this.fragments[keys[index]]
   }
-
-
-}
-
-/**
- * Содержимое фрагмента
- * @typedef {Object} FragmentValue
- * @property {number} index индекс фрагмента в массиве строк
- * @property {string[]} value значение фрагмента
- */
-
-/**
- * Объект для хранения данных о фрагменте
- * @typedef {Object} Fragment
- * @property {string} name
- * @property {FragmentValue} current текущее значение фрагмента
- * @property {FragmentValue} original оригинальное значение фрагмента
- */
-
-/**
- * Найти следующий фрагмент от текущего
- * @param {string[]} stringArray массив строк, с которым мы работаем
- * @param {Fragment} [fragment] текущий фрагмент. Если null или не указан - то ищем первый фрагмент
- * @returns {?Fragment} найденный фрагмент; null если ничего не нашли
- */
-export const findNextFragment = (stringArray, fragment) => {}
-
-export const findFragmentByName = (stringArray, fragmentName) => {
 }

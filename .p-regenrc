@@ -8,14 +8,48 @@
   },
   "basePath": "/Users/deksden/Documents/GitHub/p_app",
   "cachePath": "/Users/deksden/Documents/GitHub/p_app/data",
-  "models": {
-    "mrpPlan": {
-    }
-  },
   "files": [
     {
-      "name": "file1",
-      "fragments": []
+      "name": "src/app.js"
+    },
+    {
+      "name": "src/resources/mrp-plan.js"
+    },
+    {
+      "name": "src/resources/mrp-stage.js"
+    },
+    {
+      "name": "src/resources/mrp-vendor.js"
     }
-  ]
+  ],
+  "fragment-types": {
+    "app-import": {
+      "url": "/codegen/app/imports?models=MrpPlan&models=MrpStage&models=MrpVendor&models=MrpVendorPayment&models=MrpProduct&models=MrpProductStock&models=MrpResource&models=MrpResourceStock&models=MrpStageResource",
+      "postprocess": "splitByNewline"
+    },
+    "app-resource":{
+      "url": "/codegen/app/resources?models=MrpPlan&models=MrpStage&models=MrpVendor&models=MrpVendorPayment&models=MrpProduct&models=MrpProductStock&models=MrpResource&models=MrpResourceStock&models=MrpStageResource",
+      "postprocess": "splitByNewline"
+    },
+    "import-components": {
+      "url": "/codegen/model/{{modelName}}/import-components",
+      "postprocess": "splitByComma,addComma"
+    },
+    "field-defs": {
+      "url": "/codegen/model/{{modelName}}/field-defs",
+      "postprocess": "splitByNewline"
+    },
+    "list-fields": {
+      "url": "/codegen/model/{{modelName}}/list",
+      "postprocess": "splitByNewline"
+    },
+    "form-fields": {
+      "url": "/codegen/model/{{modelName}}/edit",
+      "postprocess": "splitByNewline"
+    },
+    "filter-fields": {
+      "url": "/codegen/model/{{modelName}}/filter",
+      "postprocess": "splitByNewline"
+    }
+  }
 }

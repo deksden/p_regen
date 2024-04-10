@@ -4,7 +4,7 @@ import {
 } from '../const'
 
 
-export const showHelp = () => {
+export const showHelp = (logger) => {
   const table = new Table({
     head: ["Command", "Alias", "Description"],
     style: {
@@ -13,5 +13,5 @@ export const showHelp = () => {
   })
 
   table.push(...REGEN_HELP_ROWS)
-  console.log(table.toString())
+  logger.info(table.toString())
 }
