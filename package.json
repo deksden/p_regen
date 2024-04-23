@@ -33,6 +33,7 @@
     "lodash": "^4.17.21",
     "mustache": "^4.2.0",
     "node-fetch": "^3.3.2",
+    "specifier-resolution-node": "^1.1.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {
